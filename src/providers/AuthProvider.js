@@ -1,4 +1,3 @@
-// src/providers/AuthProvider.js
 'use client';
 
 import React, { createContext, useState, useEffect } from 'react';
@@ -20,26 +19,50 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = Cookies.get('token');
+        const token = Cookies.get('accessToken');
         
         if (!token) {
-          setIsLoading(false);
-          return;
-        }
-
-        // Ambil data profile
-        const response = await authAPI.getProfile();
-        if (response.success) {
-          setUser(response.data);
-          setIsAuthenticated(true);
+          // Coba refresh token jika tidak ada access token
+          try {
+            const refreshResponse = await authAPI.refreshToken();
+            if (refreshResponse.success) {
+              const { user } = refreshResponse.data;
+              setUser(user);
+              setIsAuthenticated(true);
+            } else {
+              setIsAuthenticated(false);
+            }
+          } catch (refreshError) {
+            setIsAuthenticated(false);
+          }
         } else {
-          // Jika gagal, hapus token
-          Cookies.remove('token');
+          // Jika ada token, ambil data profile
+          try {
+            const response = await authAPI.getProfile();
+            if (response.success) {
+              setUser(response.data);
+              setIsAuthenticated(true);
+            } else {
+              // Jika gagal, coba refresh token
+              const refreshResponse = await authAPI.refreshToken();
+              if (refreshResponse.success) {
+                const { user } = refreshResponse.data;
+                setUser(user);
+                setIsAuthenticated(true);
+              } else {
+                setIsAuthenticated(false);
+                Cookies.remove('accessToken');
+              }
+            }
+          } catch (error) {
+            setIsAuthenticated(false);
+            Cookies.remove('accessToken');
+          }
         }
       } catch (error) {
         console.error('Auth check error:', error);
-        // Jika error, hapus token
-        Cookies.remove('token');
+        setIsAuthenticated(false);
+        Cookies.remove('accessToken');
       } finally {
         setIsLoading(false);
       }
@@ -48,6 +71,22 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  // Setup periodic token refresh
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Refresh token setiap 10 menit (600000ms)
+      const refreshInterval = setInterval(async () => {
+        try {
+          await authAPI.refreshToken();
+        } catch (error) {
+          console.error('Token refresh error:', error);
+        }
+      }, 600000);
+
+      return () => clearInterval(refreshInterval);
+    }
+  }, [isAuthenticated]);
+
   // Login
   const login = async (email, password) => {
     setIsLoading(true);
@@ -55,10 +94,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.login(email, password);
       
       if (response.success) {
-        const { user, token } = response.data;
-        
-        // Simpan token ke cookies
-        Cookies.set('token', token, { expires: 1 }); // Expires in 1 day
+        const { user } = response.data;
         
         // Update state
         setUser(user);
@@ -81,12 +117,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Logout
-  const logout = () => {
-    Cookies.remove('token');
-    setUser(null);
-    setIsAuthenticated(false);
-    router.push('/auth/login');
-    toast.success('Logout berhasil');
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+      router.push('/auth/login');
+      toast.success('Logout berhasil');
+      setIsLoading(false);
+    }
   };
 
   // Value yang akan dishare ke semua komponen

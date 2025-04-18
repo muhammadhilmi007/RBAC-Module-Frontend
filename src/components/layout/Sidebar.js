@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAccess } from '@/hooks/useAccess';
 import { useAuth } from '@/hooks/useAuth';
 import { 
   FiHome, FiUsers, FiFileText, FiSettings, FiLogOut, FiMenu,
-  FiShield, FiLock, FiList, FiDatabase, FiLayers, FiChevronDown, FiChevronRight
+  FiShield, FiLock, FiList, FiDatabase, FiLayers, FiChevronDown, FiChevronRight,
+  FiActivity
 } from 'react-icons/fi';
 import { FaBuilding } from 'react-icons/fa';
 
@@ -23,6 +24,7 @@ const iconMap = {
   'list': FiList,
   'database': FiDatabase,
   'layers': FiLayers,
+  'activity': FiActivity,
   'default-icon': FiHome
 };
 
@@ -36,7 +38,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const isAdminPath = pathname?.startsWith('/admin');
   
   // If in admin path and admin menu is not open, open it
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAdminPath && !adminMenuOpen) {
       setAdminMenuOpen(true);
     }
@@ -68,7 +70,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className="flex flex-col h-full">
           {/* Logo dan judul */}
           <div className="px-6 py-4 border-b border-gray-700">
-            <h1 className="text-xl font-bold">Samudra ERP</h1>
+            <h1 className="text-xl font-bold">RBAC Admin</h1>
             {user && (
               <p className="text-sm text-gray-400 mt-1">{user.name}</p>
             )}
@@ -96,8 +98,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 {/* Dynamic menu items from ACL */}
                 {sidebarMenu
                   .filter(item => 
-                    // Filter out admin-specific features and Dashboard from main menu
-                    !['Pengaturan', 'Dashboard'].includes(item.name)
+                    // Filter out admin-specific features from main menu
+                    !['Pengaturan','Dashboard'].includes(item.name)
                   )
                   .map((item) => (
                     <li key={item.name}>
@@ -177,6 +179,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                           >
                             <FiDatabase className="mr-3 text-lg" />
                             <span>Permission</span>
+                          </Link>
+                        </li>
+                        {/* Audit Logs Menu Item */}
+                        <li>
+                          <Link
+                            href="/admin/audit-logs"
+                            className={`flex items-center px-4 py-2 rounded-md transition-colors ${pathname === '/admin/audit-logs' ? 'bg-gray-700 text-blue-400' : 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'}`}
+                          >
+                            <FiActivity className="mr-3 text-lg" />
+                            <span>Audit Logs</span>
                           </Link>
                         </li>
                       </ul>

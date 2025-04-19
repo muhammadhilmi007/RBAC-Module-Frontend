@@ -156,6 +156,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         </li>
                         <li>
                           <Link
+                            href="/admin/role-hierarchy"
+                            className={`flex items-center px-4 py-2 rounded-md transition-colors ${pathname === '/admin/role-hierarchy' ? 'bg-gray-700 text-blue-400' : 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'}`}
+                          >
+                            <FiLayers className="mr-3 text-lg" />
+                            <span>Role Hierarchy</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
                             href="/admin/acl"
                             className={`flex items-center px-4 py-2 rounded-md transition-colors ${pathname === '/admin/acl' ? 'bg-gray-700 text-blue-400' : 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'}`}
                           >

@@ -173,4 +173,40 @@ export const aclAPI = {
   },
 };
 
+// Roles API
+export const rolesAPI = {
+  getAllRoles: async () => {
+    const response = await api.get('/roles');
+    return response.data;
+  },
+};
+
+// Role Hierarchy API
+export const roleHierarchyAPI = {
+  getRoleHierarchy: async () => {
+    const response = await api.get('/role-hierarchy/hierarchy');
+    return response.data;
+  },
+  
+  getAllRolePermissions: async (roleId) => {
+    const response = await api.get(`/role-hierarchy/${roleId}/permissions`);
+    return response.data;
+  },
+  
+  updateParentRole: async (roleId, parentRoleId) => {
+    const response = await api.put(`/role-hierarchy/${roleId}/parent`, { parentRoleId });
+    return response.data;
+  },
+  
+  grantFullAccess: async (roleId) => {
+    const response = await api.post(`/role-hierarchy/${roleId}/grant-full-access`);
+    return response.data;
+  },
+  
+  copyPermissions: async (sourceRoleId, targetRoleId) => {
+    const response = await api.post('/role-hierarchy/copy-permissions', { sourceRoleId, targetRoleId });
+    return response.data;
+  },
+};
+
 export default api;

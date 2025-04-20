@@ -176,9 +176,9 @@ export default function PermissionsManagementPage() {
                   </Table.Cell>
                 </Table.Row>
               ) : (
-                filteredPermissions.map((permission) => (
+                filteredPermissions.map((permission, index) => (
                   <Table.Row key={permission.id}>
-                    <Table.Cell className="text-gray-500">#{permission.id}</Table.Cell>
+                    <Table.Cell className="text-gray-500">#{index + 1}</Table.Cell>
                     <Table.Cell className="font-medium text-gray-900">{permission.name}</Table.Cell>
                     <Table.Cell className="text-right">
                       <div className="flex items-center justify-end space-x-2">

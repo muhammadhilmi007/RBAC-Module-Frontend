@@ -179,9 +179,9 @@ export default function FeaturesManagementPage() {
                   </Table.Cell>
                 </Table.Row>
               ) : (
-                filteredFeatures.map((feature) => (
+                filteredFeatures.map((feature, index) => (
                   <Table.Row key={feature.id}>
-                    <Table.Cell className="text-gray-500">#{feature.id}</Table.Cell>
+                    <Table.Cell className="text-gray-500">#{index + 1}</Table.Cell>
                     <Table.Cell className="font-medium text-gray-900">{feature.name}</Table.Cell>
                     <Table.Cell>{feature.route || '-'}</Table.Cell>
                     <Table.Cell>{feature.icon || '-'}</Table.Cell>

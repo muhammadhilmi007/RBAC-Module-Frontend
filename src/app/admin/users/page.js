@@ -185,9 +185,9 @@ export default function UsersManagementPage() {
                   </Table.Cell>
                 </Table.Row>
               ) : (
-                filteredUsers.map((user) => (
+                filteredUsers.map((user, index) => (
                   <Table.Row key={user.id}>
-                    <Table.Cell className="text-gray-500">#{user.id}</Table.Cell>
+                    <Table.Cell className="text-gray-500">#{index + 1}</Table.Cell>
                     <Table.Cell className="font-medium text-gray-900">{user.name}</Table.Cell>
                     <Table.Cell>{user.email}</Table.Cell>
                     <Table.Cell>

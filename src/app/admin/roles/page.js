@@ -155,9 +155,9 @@ export default function RolesManagementPage() {
                   </Table.Cell>
                 </Table.Row>
               ) : (
-                roles.map((role) => (
+                roles.map((role, index) => (
                   <Table.Row key={role.id}>
-                    <Table.Cell className="text-gray-500">#{role.id}</Table.Cell>
+                    <Table.Cell className="text-gray-500">#{index + 1}</Table.Cell>
                     <Table.Cell className="font-medium text-gray-900">{role.name}</Table.Cell>
                     <Table.Cell>{role._count?.users || 0} pengguna</Table.Cell>
                     <Table.Cell className="text-right">
